@@ -1,4 +1,6 @@
-(ns scratch.core)
+(ns scratch.core
+  (:require [clojure.math.numeric-tower :as math])
+  (:require [clojure.pprint :as pprint]))
 
 (defn letter-ct
   "get the letter count"
@@ -19,8 +21,6 @@
 
 (defn get-primes
   [stop]
-   ;; (get-primes n [] 1))
-   ;;(loop [stop n found [] testval 1 count 0]
   (loop [stop stop found [] testval 1]
     (if (= (count found) stop)
       found
@@ -29,3 +29,34 @@
                (conj found testval)
                found)
              (inc testval)))))
+
+(defn nth-prime
+  [stop]
+  (loop [stop stop
+         count 0
+         testval 1
+         last-prime 0]
+    (if (= count stop)
+      last-prime
+      (recur stop
+             (if (prime? testval)
+               (inc count)
+               count)
+             (inc testval)
+             testval))))
+
+
+(defn make-big
+  [stop]
+  (math/sqrt (reduce + 0
+                     (filter odd?
+                             (get-primes stop)))))
+
+(defn print-table [aseq column-width]
+  (binding [*out* (pprint/get-pretty-writer *out*)]
+    (doseq [row aseq]
+      (doseq [col row]
+        (pprint/cl-format true "~4D~7,vT" col column-width))
+      (prn))))
+
+;;(print-table (map #(vector % (* % %) (* % % %)) (range 1 11)) 8)))))
